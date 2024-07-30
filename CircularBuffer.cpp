@@ -115,10 +115,12 @@ CircularBuffer::CircularBuffer( uint16_t size ) :
          *
          * @return  CircularBuffer data size
          */
+/*
 uint16_t
 CircularBuffer::count( void ) const {
-    return count();
+    return ByteArray::count();
 }
+*/
 
 /**
  * @brief   returns size of buffer
@@ -127,11 +129,12 @@ CircularBuffer::count( void ) const {
  *
  * @return  CircularBuffer array size
  */
+/*
 uint16_t
 CircularBuffer::size( void ) const {
-    return size(); 
+    return ByteArray::size(); 
 }
-
+*/
 
 /**
 * @brief   effectively clears the content of the buffer
@@ -175,7 +178,7 @@ CircularBuffer::clear( void ) {
  */
 bool
 CircularBuffer::isEmpty( void ) const {
-    return 0 == count();
+    return 0 == ByteArray::count();
 }
 
 
@@ -188,7 +191,7 @@ CircularBuffer::isEmpty( void ) const {
  */
 bool
 CircularBuffer::isFull() const {
-    return size() == count();
+    return ByteArray::size() == ByteArray::count();
 }
 
 
@@ -205,13 +208,13 @@ CircularBuffer::get( void ) {
         //throw std::runtime_error("Buffer is empty");
         return 0;
     }
-    uint8_t item = data()[_tail];
+    uint8_t item = ByteArray::data()[_tail];
     //Move tail to next position
     ++_tail;
-    if ( _tail >= size() ) {
-        _tail = _tail - size();
+    if ( _tail >= ByteArray::size() ) {
+        _tail = _tail - ByteArray::size();
     }
-    update_count( count() - 1 );
+    update_count( ByteArray::count() - 1 );
     return item;
 }
 
@@ -225,20 +228,20 @@ CircularBuffer::get( void ) {
  */
 uint8_t
 CircularBuffer::at( uint16_t index ) const {
-    if ( index >= count() ) {
+    if ( index >= ByteArray::count() ) {
         //throw std::out_of_range("Index out of range");
         return 0;
     }
     uint16_t pos = _tail + index;
-    if ( pos > size() ) {
-        pos -= size(); 
+    if ( pos > ByteArray::size() ) {
+        pos -= ByteArray::size(); 
     };
-    return data()[pos];
+    return ByteArray::data()[pos];
 }
 
 
 /**
- * @brief   return byte at index that wraps around size() from _tail
+ * @brief   return byte at index that wraps around ByteArray::size() from _tail
  *
  * @param   index  array index
  *
@@ -246,18 +249,18 @@ CircularBuffer::at( uint16_t index ) const {
  */
 uint8_t
 CircularBuffer::at( int index ) const {
-    //if ( index >= count() ) {
+    //if ( index >= ByteArray::count() ) {
     //    //throw std::out_of_range("Index out of range");
     //    return 0;
     //}
     int pos = _tail + index;
     while ( pos < 0 ) {
-        pos += size();
+        pos += ByteArray::size();
     }
-    while ( pos >= size() ) {
-        pos -= size();
+    while ( pos >= ByteArray::size() ) {
+        pos -= ByteArray::size();
     }
-    return data()[pos];
+    return ByteArray::data()[pos];
 }
 
         /**
@@ -336,7 +339,7 @@ CircularBuffer::append( uint8_t abyte ) {
 
 /**
  * @brief   Removes n bytes from the end of the byte array.
- *          If n is greater than size(), the result is an empty byte array.
+ *          If n is greater than ByteArray::size(), the result is an empty byte array.
  *
  * @param   n   bytes to remove rom the end
  *
@@ -344,21 +347,21 @@ CircularBuffer::append( uint8_t abyte ) {
  */
 CircularBuffer
 CircularBuffer::chop( int n ) {
-    if ( n > count() ) {
-        n = count();
+    if ( n > ByteArray::count() ) {
+        n = ByteArray::count();
     }
-    if ( n < ( count() - size() ) ) {
-        n = count() - size() ;
+    if ( n < ( ByteArray::count() - ByteArray::size() ) ) {
+        n = ByteArray::count() - ByteArray::size() ;
     }
     int new_head = _head - n;
-    if ( new_head > size() ) {
-        new_head -= size();
+    if ( new_head > ByteArray::size() ) {
+        new_head -= ByteArray::size();
     }
     if ( new_head < 0 ) {
-        new_head += size();
+        new_head += ByteArray::size();
     }
     _head = new_head;
-    update_count( count() - n );
+    update_count( ByteArray::count() - n );
     return *this;
 }
 
@@ -372,7 +375,7 @@ CircularBuffer::chop( int n ) {
  */
 void
 CircularBuffer::print( void ) const {
-    for ( uint16_t i = 0; i < count(); ++i ) {
+    for ( uint16_t i = 0; i < ByteArray::count(); ++i ) {
         printf( "%c", at( i ) );
     }
 }

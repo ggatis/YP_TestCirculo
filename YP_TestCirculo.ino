@@ -28,6 +28,30 @@ CircularBuffer* pCBuff2 = nullptr;  //serial2 activity
 /*********************************************************************/
 /*                              Serials                              */
 /*********************************************************************/
+//data from PC, called by default when
+//defined(USBCON) && defined(USBD_USE_CDC)
+//and ndef DISABLE_GENERIC_SERIALUSB
+void serialEventUSB( void ) {
+    LEDtoggle();
+    uint8_t buff;
+#if 1
+    printf("sEvU: ");
+    while ( 0 < SerialUSB.available() ) {
+        buff = SerialUSB.read();
+        printf("%c", buff );
+    }
+    //printf("\r\n");
+#endif
+//    while ( 0 < SerialUSB.available() ) {
+//        buff = SerialUSB.read();
+//    buff = Serial1.write( &buff, 1 );
+    buff = SerialUSB.write( &buff, 1 );
+    printf(" %d\r\n", buff );
+//    }
+//    Serial1.flush();
+}
+
+
 //data from modem
 void serialEvent1() {
     LEDtoggle();
@@ -37,7 +61,7 @@ void serialEvent1() {
 //data to modem
 void serialEvent2() {
     LEDtoggle();
-    printf("sEv2\r\n");
+    //printf("sEv2\r\n");
     lastIOtick = HAL_GetTick();
     if ( pCBuff2 ) {
         while ( 0 < Serial2.available() ) {
@@ -117,7 +141,7 @@ void setupObjects() {
     pProcessors = new Processors( pCBuff2 );
 
     //Add a parser and a processor to the Processors list
-    pProcessors->AddProcessor( parse, 20 );
+    pProcessors->AddProcessor( parser, 20 );
     pProcessors->AddProcessor( process, 1 );
 
     //init GoL
@@ -159,9 +183,12 @@ uint32_t lastONtick = 0;
 
 void loop() {
 
+//Serial.flush()
+
     mySysTick = HAL_GetTick();
 
     if ( pCBuff2->count() ) {
+        printf("%d byte[s] incoming.\r\n", pCBuff2->count() );
         switch ( pProcessors->processAll() ) {
             case StatusCode::PENDING:
                 printf("Pending %d bytes in pipe: %d.\r\n",

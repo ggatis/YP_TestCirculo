@@ -18,7 +18,7 @@
 #include "CircularBuffer.h"
 
 //sample 1
-StatusCode parse( ByteArray* pin, ByteArray* pout );
+StatusCode parser( ByteArray* pin, ByteArray* pout );
 StatusCode process( ByteArray* pin, ByteArray* pout );
 
 

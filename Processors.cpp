@@ -16,7 +16,7 @@
 #include "YP_TestCirculo.h"
 
 
-StatusCode parse( ByteArray* pin, ByteArray* pout ) {
+StatusCode parser( ByteArray* pin, ByteArray* pout ) {
     
     CircularBuffer* pinCB = (CircularBuffer*)pin;
     
