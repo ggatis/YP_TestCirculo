@@ -1,5 +1,5 @@
 /**
- * @file    CircularBuffer.c
+ * @file    CircularBuffer.cpp
  *
  * @brief   Implementation of class CircularBuffer
  *

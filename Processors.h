@@ -29,10 +29,17 @@ class Processors {
 
 public:
 
-    Processors( uint16_t buffersize = 128 ) : defaultBufferSize( buffersize ) {
-        //Create the first buffer
+    Processors( uint16_t buffersize = 128 ) :
+        defaultBufferSize( buffersize ) {
+        //create the first buffer
         ByteArray* initialBuffer = new ByteArray( defaultBufferSize );
         buffers.push_back( initialBuffer );
+    }
+
+    Processors( ByteArray* pBAin ) :
+        defaultBufferSize( pBAin->size() ) {
+        //do not create the first buffer
+        buffers.push_back( pBAin );
     }
 
     ~Processors() {

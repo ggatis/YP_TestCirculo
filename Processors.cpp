@@ -1,7 +1,7 @@
 /**
- * @file    Reverse.h
+ * @file    Processors.cpp
  *
- * @brief   Declaration of class Reverse
+ * @brief   Functions for Processors
  *
  * @note    This example code is free software: you can redistribute it and/or modify it.
  *
@@ -29,10 +29,11 @@ StatusCode parse( ByteArray* pin, ByteArray* pout ) {
     }
 
     if ( 20 > pout->count() ) {
-        if ( ( lastIOtick + 2000 ) > HAL_GetTick() ) {
+        if ( ( lastIOtick + 2000 ) > mySysTick ) {
             return StatusCode::PENDING;
         }
     }
+
     return StatusCode::OK;
 }
 
@@ -52,5 +53,6 @@ StatusCode process( ByteArray* pin, ByteArray* pout ) {
         pin->print();
     }
     printf("\r\n");
+
     return StatusCode::OK;
 }
