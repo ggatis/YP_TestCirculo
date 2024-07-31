@@ -44,9 +44,9 @@ void serialEventUSB( void ) {
 #endif
 //    while ( 0 < SerialUSB.available() ) {
 //        buff = SerialUSB.read();
-//    buff = Serial1.write( &buff, 1 );
-    buff = SerialUSB.write( &buff, 1 );
-    printf(" %d\r\n", buff );
+    buff = Serial1.write( &buff, 1 );
+//    buff = SerialUSB.write( &buff, 1 );
+    printf(" %d, %d\r\n", buff, Serial1.availableForWrite() );
 //    }
 //    Serial1.flush();
 }
@@ -55,7 +55,7 @@ void serialEventUSB( void ) {
 //data from modem
 void serialEvent1() {
     LEDtoggle();
-    printf("sEv1\r\n");
+    //printf("sEv1\r\n");
 }
 
 //data to modem
@@ -86,22 +86,41 @@ void setupSerials( void ) {
     ;   //wait for serial port to connect. Needed for native USB port only
   }
   LEDoff();
+  printf( "1RX PA10 DigitalPin/PinName: %d/%d\r\n", PA10, digitalPinToPinName( PA10 ) );
+  printf( "1TX PA9  DigitalPin/PinName: %d/%d\r\n", PA9, digitalPinToPinName( PA9 ) );
+  printf( "2RX PA_3_ALT1 DigitalPin/PinName: %d/%d\r\n", PA_3_ALT1, digitalPinToPinName( PA_3_ALT1 ) );
+  printf( "2TX PA_2_ALT1 DigitalPin/PinName: %d/%d\r\n", PA_2_ALT1, digitalPinToPinName( PA_2_ALT1 ) );
 
   Serial1.end();
-  //Serial1.setRx( PA10 );
-  //Serial1.setTx( PA9 );
-  Serial1.begin( 115200 );
-  //Serial1.print( "S1" );
-
   Serial2.end();
+  Serial4.end();
+  //Serial5.end();
+
+  Serial1.setRx( PA10 );
+  Serial1.setTx( PA9 );
+  Serial1.begin( 115200 );
+  while ( !Serial1 ) {
+    printf("1");
+  }
+  printf( "Sirreal1 ready!\r\n" );
+
   //Serial2.setRx( PA3 );
   //Serial2.setTx( PA2 );
   Serial2.setRx( PA_3_ALT1 );
   Serial2.setTx( PA_2_ALT1 );
   Serial2.begin( 115200 );
+  while ( !Serial2 ) {
+    printf("2");
+  }
+  printf( "Sirreal2 ready!\r\n" );
 
-  Serial4.end();
-  //Serial5.end();
+  Serial1.print( "Sirreal1\r\n" );
+  Serial2.print( "Sirreal2\r\n" );
+
+  printf( "1RX PA10 PinName: %d\r\n", Serial1.getRx() );
+  printf( "1TX PA9  PinName: %d\r\n", PA9, Serial1.getTx() );
+  printf( "2RX PA_3_ALT1 PinName: %d\r\n", PA_3_ALT1, digitalPinToPinName( PA_3_ALT1 ) );
+  printf( "2TX PA_2_ALT1 PinName: %d\r\n", PA_2_ALT1, digitalPinToPinName( PA_2_ALT1 ) );
 
 }
 
