@@ -503,6 +503,21 @@ ByteArray::print( void ) const {
 
 
 /**
+ * @brief   prints the buffer as HEX
+ *
+ * @param   -
+ *
+ * @return  -
+ */
+void
+ByteArray::printHEX( void ) const {
+    for ( uint16_t i = 0; i < count(); i++ ) {
+        printf( "%02X", at( i ) );
+    }
+}
+
+
+/**
  * @brief   prints the buffer as chars in 2D
  *
  * @param   -

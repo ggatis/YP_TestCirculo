@@ -17,11 +17,6 @@
 #include "Pipe.h"
 #include "CircularBuffer.h"
 
-//sample 1
-StatusCode parser( ByteArray* pin, ByteArray* pout );
-StatusCode process( ByteArray* pin, ByteArray* pout );
-
-
 #include <vector>
 
 
@@ -30,14 +25,14 @@ class Processors {
 public:
 
     Processors( uint16_t buffersize = 128 ) :
-        defaultBufferSize( buffersize ) {
+        _defaultBufferSize( buffersize ) {
         //create the first buffer
-        ByteArray* initialBuffer = new ByteArray( defaultBufferSize );
+        ByteArray* initialBuffer = new ByteArray( _defaultBufferSize );
         buffers.push_back( initialBuffer );
     }
 
     Processors( ByteArray* pBAin ) :
-        defaultBufferSize( pBAin->size() ) {
+        _defaultBufferSize( pBAin->size() ) {
         //do not create the first buffer
         buffers.push_back( pBAin );
     }
@@ -62,7 +57,7 @@ public:
         }
 
         //Create new buffer
-        ByteArray* outputBuffer = new ByteArray( ( outputBufferSize < 1 ) ? defaultBufferSize : outputBufferSize );
+        ByteArray* outputBuffer = new ByteArray( ( outputBufferSize < 1 ) ? _defaultBufferSize : outputBufferSize );
 
         if ( ( nullptr == outputBuffer ) || ( nullptr == outputBuffer->data() ) ) {
             return StatusCode::ERROR;
@@ -113,23 +108,31 @@ public:
     //Count pipes from 1
     StatusCode processStep( uint8_t i ) {
         if ( i > 0 && i <= pipes.size() ) {
-            faultyPipe = 0;     //Reset the faulty pipe indicator
+            _faultyPipe = 0;     //Reset the faulty pipe indicator
             StatusCode status = pipes[i-1]->process();
             if ( status != StatusCode::OK ) {
-                faultyPipe = i; //Count pipes from 1
+                _faultyPipe = i; //Count pipes from 1
+            }
+            if ( _ErrorHandler ) {
+                _ErrorHandler( this, status );
             }
             return status;
         }
-        faultyPipe = i;             //Count pipes from 1
+        _faultyPipe = i;             //Count pipes from 1
         return StatusCode::ERROR;   //no such a pipe
     }
 
     StatusCode processAll() {
-        faultyPipe = 0;         //Reset the faulty pipe indicator
+        _faultyPipe = 0;         //Reset the faulty pipe indicator
         for ( size_t i = 0; i < pipes.size(); ++i ) {
+            //printf("Processing pipe %d\r\n", i + 1 );
             StatusCode status = pipes[i]->process();
+            //printf("Pipe result: %d\r\n", status );
             if ( status != StatusCode::OK ) {
-                faultyPipe = i + 1; //Count pipes from 1
+                _faultyPipe = i + 1; //Count pipes from 1
+                if ( _ErrorHandler ) {
+                    _ErrorHandler( this, status );
+                }
                 return status;
             }
         }
@@ -137,7 +140,7 @@ public:
     }
 
     uint8_t getFaultyPipe() const {
-        return faultyPipe;
+        return _faultyPipe;
     }
 
     size_t getBufferCount() const {
@@ -164,14 +167,29 @@ public:
     }
 
 
+    void setErrorHandler( void (*ErrorHandler)( Processors* pProcessors, StatusCode ErrorCode ) ) {
+        // Handle the error code here
+        if ( ErrorHandler ) {
+            _ErrorHandler = ErrorHandler;
+        }
+    }
+
 private:
 
-    uint8_t     faultyPipe          = 0;
-    uint16_t    defaultBufferSize   = 128;
+    uint8_t     _faultyPipe         = 0;
+    uint16_t    _defaultBufferSize  = 128;
+    void      (*_ErrorHandler)( Processors* pProcessors, StatusCode ErrorCode ) = nullptr;
 
     std::vector<ByteArray*> buffers;
     std::vector<Pipe*> pipes;
 
 };
+
+
+//sample 1
+StatusCode parser( ByteArray* pin, ByteArray* pout );
+StatusCode process( ByteArray* pin, ByteArray* pout );
+void myErrorHandler( Processors* pProcessors, StatusCode ErrorCode );
+
 
 #endif // _PROCESSORS_H_

@@ -273,6 +273,15 @@ class ByteArray {
         void        print( void ) const;
 
         /**
+         * @brief   prints the buffer as HEX
+         *
+         * @param   -
+         *
+         * @return  -
+         */
+        void        printHEX( void ) const;
+
+        /**
          * @brief   prints the buffer as chars in 2D
          *
          * @param   -

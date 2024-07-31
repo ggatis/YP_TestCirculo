@@ -35,20 +35,14 @@ void serialEventUSB( void ) {
     LEDtoggle();
     uint8_t buff;
 #if 1
-    printf("sEvU: ");
+    //printf("sEvU: ");
     while ( 0 < SerialUSB.available() ) {
         buff = SerialUSB.read();
-        printf("%c", buff );
+        //printf("%c", buff );
+        Serial1.write( &buff, 1 );
     }
     //printf("\r\n");
 #endif
-//    while ( 0 < SerialUSB.available() ) {
-//        buff = SerialUSB.read();
-    buff = Serial1.write( &buff, 1 );
-//    buff = SerialUSB.write( &buff, 1 );
-    printf(" %d, %d\r\n", buff, Serial1.availableForWrite() );
-//    }
-//    Serial1.flush();
 }
 
 
@@ -86,10 +80,10 @@ void setupSerials( void ) {
     ;   //wait for serial port to connect. Needed for native USB port only
   }
   LEDoff();
-  printf( "1RX PA10 DigitalPin/PinName: %d/%d\r\n", PA10, digitalPinToPinName( PA10 ) );
-  printf( "1TX PA9  DigitalPin/PinName: %d/%d\r\n", PA9, digitalPinToPinName( PA9 ) );
-  printf( "2RX PA_3_ALT1 DigitalPin/PinName: %d/%d\r\n", PA_3_ALT1, digitalPinToPinName( PA_3_ALT1 ) );
-  printf( "2TX PA_2_ALT1 DigitalPin/PinName: %d/%d\r\n", PA_2_ALT1, digitalPinToPinName( PA_2_ALT1 ) );
+  //printf( "1RX PA10 DigitalPin/PinName: %d/%d\r\n", PA10, digitalPinToPinName( PA10 ) );
+  //printf( "1TX PA9  DigitalPin/PinName: %d/%d\r\n", PA9, digitalPinToPinName( PA9 ) );
+  //printf( "2RX PA_3_ALT1 DigitalPin/PinName: %d/%d\r\n", PA_3_ALT1, digitalPinToPinName( PA_3_ALT1 ) );
+  //printf( "2TX PA_2_ALT1 DigitalPin/PinName: %d/%d\r\n", PA_2_ALT1, digitalPinToPinName( PA_2_ALT1 ) );
 
   Serial1.end();
   Serial2.end();
@@ -99,28 +93,25 @@ void setupSerials( void ) {
   Serial1.setRx( PA10 );
   Serial1.setTx( PA9 );
   Serial1.begin( 115200 );
-  while ( !Serial1 ) {
-    printf("1");
-  }
-  printf( "Sirreal1 ready!\r\n" );
+  //while ( !Serial1 ) {
+  //  printf("1");
+  //}
+  //printf( "Serial1 ready!\r\n" );
 
   //Serial2.setRx( PA3 );
   //Serial2.setTx( PA2 );
   Serial2.setRx( PA_3_ALT1 );
   Serial2.setTx( PA_2_ALT1 );
   Serial2.begin( 115200 );
-  while ( !Serial2 ) {
-    printf("2");
-  }
-  printf( "Sirreal2 ready!\r\n" );
+  //while ( !Serial2 ) {
+  //  printf("2");
+  //}
+  //printf( "Serial2 ready!\r\n" );
 
-  Serial1.print( "Sirreal1\r\n" );
-  Serial2.print( "Sirreal2\r\n" );
-
-  printf( "1RX PA10 PinName: %d\r\n", Serial1.getRx() );
-  printf( "1TX PA9  PinName: %d\r\n", PA9, Serial1.getTx() );
-  printf( "2RX PA_3_ALT1 PinName: %d\r\n", PA_3_ALT1, digitalPinToPinName( PA_3_ALT1 ) );
-  printf( "2TX PA_2_ALT1 PinName: %d\r\n", PA_2_ALT1, digitalPinToPinName( PA_2_ALT1 ) );
+  //printf( "1RX PA10 PinName: %d\r\n", Serial1.getRx() );
+  //printf( "1TX PA9  PinName: %d\r\n", PA9, Serial1.getTx() );
+  //printf( "2RX PA_3_ALT1 PinName: %d\r\n", PA_3_ALT1, digitalPinToPinName( PA_3_ALT1 ) );
+  //printf( "2TX PA_2_ALT1 PinName: %d\r\n", PA_2_ALT1, digitalPinToPinName( PA_2_ALT1 ) );
 
 }
 
@@ -162,6 +153,7 @@ void setupObjects() {
     //Add a parser and a processor to the Processors list
     pProcessors->AddProcessor( parser, 20 );
     pProcessors->AddProcessor( process, 1 );
+    pProcessors->setErrorHandler( myErrorHandler );
 
     //init GoL
     //GoLinit( pProcessors->getFrontEnd(), pProcessors->getBackEnd() );
@@ -178,8 +170,8 @@ void setup( void ) {
 
   printf("\r\nYP_TestCirculo\r\n");
 
-  Serial1.write("Serial1\r\n");
-  Serial2.write("Serial2\r\n");
+  Serial1.print("Serial1\r\n");
+  Serial2.print("Serial2\r\n");
 
   //setupTimers();
   setupObjects();
@@ -202,24 +194,7 @@ uint32_t lastONtick = 0;
 
 void loop() {
 
-//Serial.flush()
-
     mySysTick = HAL_GetTick();
-
-    if ( pCBuff2->count() ) {
-        printf("%d byte[s] incoming.\r\n", pCBuff2->count() );
-        switch ( pProcessors->processAll() ) {
-            case StatusCode::PENDING:
-                printf("Pending %d bytes in pipe: %d.\r\n",
-                    pProcessors->getFrontEnd()->count(),
-                    pProcessors->getFaultyPipe() );
-                break;
-            case StatusCode::ERROR:
-                printf("Processing failed in pipe: %d.\r\n", pProcessors->getFaultyPipe() );
-                break;
-            default:
-                ;
-        }
-    }
+    pProcessors->processAll();
 
 }
