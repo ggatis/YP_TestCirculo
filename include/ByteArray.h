@@ -16,10 +16,6 @@
 
 #include <string>   //cpp string
 #include <stdint.h>
-//#include <stdio.h>  //c printf
-
-//#include <USBSerial.h>
-//#include "HardwareSerial.h"
 
 
 /**

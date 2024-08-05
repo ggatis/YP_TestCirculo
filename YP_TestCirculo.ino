@@ -11,7 +11,8 @@ volatile uint32_t lastIOtick;
 
 
 #include "CircularBuffer.h"
-#include "Processors.h"
+#include "Pipeline.h"
+#include "Pipes.h"
 
 CircularBuffer* pCBuff2 = nullptr;  //serial2 activity
 
@@ -139,7 +140,7 @@ void setupTimers( void ) {
 
 
 //dynamically allocated objects
-Processors* pProcessors     = nullptr;
+Pipeline* pPipeline     = nullptr;
 
 
 void setupObjects() {
@@ -147,18 +148,18 @@ void setupObjects() {
     //serial2 buffer
     pCBuff2 = new CircularBuffer( 300 );
     
-    //Initialize Processors object specifying the default buffer size
-    pProcessors = new Processors( pCBuff2 );
+    //Initialize Pipeline object specifying the default buffer size
+    pPipeline = new Pipeline( pCBuff2 );
 
-    //Add a parser and a processor to the Processors list
-    pProcessors->AddProcessor( parser, 20 );
-    pProcessors->AddProcessor( process, 1 );
-    pProcessors->setErrorHandler( myErrorHandler );
+    //Add a parser and a processor to the Pipeline list
+    pPipeline->AddProcessor( parser, 20 );
+    pPipeline->AddProcessor( process, 1 );
+    pPipeline->setErrorHandler( myErrorHandler );
 
     //init GoL
-    //GoLinit( pProcessors->getFrontEnd(), pProcessors->getBackEnd() );
+    //GoLinit( pPipeline->getFrontEnd(), pPipeline->getBackEnd() );
 
-    //pProcessors->getFrontEnd()->print2D( width, height );
+    //pPipeline->getFrontEnd()->print2D( width, height );
 
 }
 
@@ -182,8 +183,8 @@ void setup( void ) {
 
 void clean() {
     //Delete dynamically allocated objects
-    if ( pCBuff2     ) delete pCBuff2;
-    if ( pProcessors ) delete pProcessors;
+    if ( pCBuff2   ) delete pCBuff2;
+    if ( pPipeline ) delete pPipeline;
 }
 
 
@@ -195,6 +196,6 @@ uint32_t lastONtick = 0;
 void loop() {
 
     mySysTick = HAL_GetTick();
-    pProcessors->processAll();
+    pPipeline->processAll();
 
 }

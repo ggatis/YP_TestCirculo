@@ -1,7 +1,7 @@
 /**
- * @file    Processors.cpp
+ * @file    Pipes.cpp
  *
- * @brief   Functions for Processors
+ * @brief   Functions for Pipes
  *
  * @note    This example code is free software: you can redistribute it and/or modify it.
  *
@@ -11,7 +11,7 @@
  * Gatis Gaigals, 2024
  */
 
-#include "Processors.h"
+#include "Pipeline.h"
 #include "CircularBuffer.h"
 #include "YP_TestCirculo.h"
 
@@ -70,17 +70,17 @@ StatusCode process( ByteArray* pin, ByteArray* pout ) {
     return StatusCode::OK;
 }
 
-void myErrorHandler( Processors* pProcessors, StatusCode ErrorCode ) {
+void myErrorHandler( Pipeline* pPipeline, StatusCode ErrorCode ) {
     switch ( ErrorCode ) {
     case StatusCode::PENDING:
-        if ( 1 != pProcessors->getFaultyPipe() ) {
+        if ( 1 != pPipeline->getFaultyPipe() ) {
             printf("Pending %d bytes in pipe: %d.\r\n",
-                pProcessors->getFrontEnd()->count(),
-                pProcessors->getFaultyPipe() );
+                pPipeline->getFrontEnd()->count(),
+                pPipeline->getFaultyPipe() );
         }
         break;
     case StatusCode::ERROR:
-        printf("Processing failed in pipe: %d.\r\n", pProcessors->getFaultyPipe() );
+        printf("Processing failed in pipe: %d.\r\n", pPipeline->getFaultyPipe() );
         break;
     default:
         printf("Processing done OK.\r\n");
