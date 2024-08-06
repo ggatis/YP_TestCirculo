@@ -61,7 +61,10 @@ StatusCode process( ByteArray* pin, ByteArray* pout ) {
             printf("process     ");
         }
         pin->printHEX();
-        printf(" ");
+        maxi += maxi;
+        while ( maxi++ < 41 ) {
+            printf(" ");
+        }
         pin->print();
         pin->clear();
         printf("\r\n");
